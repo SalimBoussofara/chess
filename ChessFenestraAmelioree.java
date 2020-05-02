@@ -70,7 +70,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	ImageIcon[] tabPiece= {roiWhite,reineWhite,fouWhite,fouWhite2,tourWhite,tourWhite2,cavalierWhite,cavalierWhite2,pionWhite1,pionWhite2,
 			pionWhite3,pionWhite4,pionWhite5,pionWhite6,pionWhite7,pionWhite8, 
 			roiBlack,reineBlack,fouBlack,fouBlack2,tourBlack,tourBlack2,cavalierBlack,cavalierBlack2,pionBlack1,pionBlack2,
-			pionBlack3,pionBlack4,pionBlack5,pionBlack6,pionBlack7,pionBlack8,imageBougee,imageEffacee
+			pionBlack3,pionBlack4,pionBlack5,pionBlack6,pionBlack7,pionBlack8,imageEffacee
 		};
 
 	/*
@@ -92,11 +92,11 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	int[][] tabPos=new int[34][2];
 	int width=600/8;
 	int height=560/8;
-	{tabPos[0][1]=height*7+37;tabPos[0][0]=width*4;
+	{/*tabPos[0][1]=height*7+37;tabPos[0][0]=width*4;
 	tabPos[1][1]=height*7+37;tabPos[1][0]=width*3;
-	tabPos[2][1]=height*7+37;tabPos[2][0]=width*2;
+	tabPos[2][1]=height*7+37;tabPos[2][0]=width*2;*/
 	tabPos[3][1]=height*7+37;tabPos[3][0]=width*5;
-	tabPos[4][1]=height*7+37;tabPos[4][0]=0;
+	/*tabPos[4][1]=height*7+37;tabPos[4][0]=0;
 	tabPos[5][1]=height*7+37;tabPos[5][0]=width*7;
 	tabPos[6][1]=height*7+37;tabPos[6][0]=width*6;
 	tabPos[7][1]=height*7+37;tabPos[7][0]=width;
@@ -109,9 +109,9 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	tabPos[14][0]=width*7;tabPos[14][1]=height*6+37;
 	tabPos[15][0]=width*2;tabPos[15][1]=height*6+37;
 	tabPos[16][1]=37;tabPos[16][0]=width*4;
-	tabPos[17][1]=37;tabPos[17][0]=width*3;
+	tabPos[17][1]=37;tabPos[17][0]=width*3;*/
 	tabPos[18][1]=37;tabPos[18][0]=width*2;
-	tabPos[19][1]=37;tabPos[19][0]=width*5;
+	/*tabPos[19][1]=37;tabPos[19][0]=width*5;
 	tabPos[20][1]=37;tabPos[20][0]=0;
 	tabPos[21][1]=37;tabPos[21][0]=width*7;
 	tabPos[22][1]=37;tabPos[22][0]=width*6;
@@ -123,9 +123,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	tabPos[28][0]=width*5;tabPos[28][1]=height+37;
 	tabPos[29][0]=width*6;tabPos[29][1]=height+37;
 	tabPos[30][0]=width*7;tabPos[30][1]=height+37;
-	tabPos[31][0]=0;tabPos[31][1]=height+37;
-	//tabPos[32][0]=0;tabPos[31][1]=0;
-	//tabPos[33][0]=0;tabPos[31][1]=0;
+	tabPos[31][0]=0;tabPos[31][1]=height+37;*/
 	}
 	
 	
@@ -144,17 +142,6 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 		setVisible(true);	
 		
 	}
-	/*il faut trouver un moyen pour intégrer remove à echec (si possible après intégrer échec à déplacementAutorisé)
-	 * le probleme est que colorerect vient avant le deplacement de la piece et doit anticiper tous les deplacements de la piece 
-	 * ainsi que la suppresion de l'éventuelle pièce qu'elle pourrait supprimer si elle choissisait de se déplacer sur ce rectangle
-	 *  en somme, il faut trouver comment faire colorerRect en tenant compte de l'échec et donc implicitement l'éventuelle remove
-	 *+ trouver ce qui cloche avec fouWhite2;
-	 *+vérifier si l'appel d'echecMat est juste ou non
-	 *+trouver un moyen facile pour que si echecMath retourne false, les rectangles retrouvent leurs positions
-	 *le problème apparait clairement quand on ouvre la fenêtre et qu'on trouve les rectangles de cavalierBlack dessiné
-	 *puisque c'est le premier à retourner false ++ peut-etre envisagé d'ajouter une méthode qui est comme colorerRect 
-	 *mais qui donne des positions fictives (peut-être que ça pourrait tout régler)
-	 */
 	
 	
 	public void paint(Graphics g) {
@@ -194,19 +181,18 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 			int[][] tabVerif=deplacementsVerifiees(indBougee);
 			for(int i=0;i<tabVerif.length;i++) {
 				if(tabVerif[i][0]<700) {
-					System.out.println(tabVerif[i][0]+"  "+tabVerif[i][1]);
 					g.drawRect(tabVerif[i][0],tabVerif[i][1],width,height);
 				}
 			}
 		}else if(intBool==0) {
 			for(int i=0;i<16;i++) {
-				if(tabPos[i][0]<700) {
+				if(tabPos[i][0]<700 && deplacementsVerifiees(i).length>0) {
 					g.drawRect(tabPos[i][0],tabPos[i][1],width,height);
 				}
 			}
 		}else {
 			for(int i=16;i<32;i++) {
-				if(tabPos[i][0]<700)
+				if(tabPos[i][0]<700 && deplacementsVerifiees(i).length>0)
 					g.drawRect(tabPos[i][0],tabPos[i][1],width,height);
 			}
 		}
@@ -233,19 +219,15 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 					bool=false;
 					for(int i=0;i<16;i++) {
 						if(kx==tabPos[i][0] && ky==tabPos[i][1]) {
-							tabPiece[32]=tabPiece[i];
-							tabPos[32][0]=kx;
-							tabPos[32][1]=ky;
 							indBougee=i;
 							bool=true;
 						}
 					}
 					
-					if(!bool){
+					if(!bool || deplacementsVerifiees(indBougee).length==0){
 						intBool=0;
-						System.out.println("Choisissez une pièce blanche");
+						System.out.println("Choisissez une pièce parmi celles en surbrillance");
 						sound(new File("Warning.WAV"));
-						
 					}
 					if(intBool==1) {
 						repaint();
@@ -276,20 +258,15 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 							}else {
 								posXRectEchec=0;posYRectEchec=0;
 							}
-							imageEffacee=null;
-							
-						}/*else {
-							anteRemove();
-							imageEffacee=null;
-						}*/
+						}	
 						repaint();
-						if(echecMat()==true) {	
+						if(echecMat(16)==true) {	
 							message="Les Noirs ont perdu";
 							sound(new File("tada.WAV"));
 							new replayFenestra(message);
 						}
-					}
-					
+						
+				}	
 				
 				//***************************************************
 				if(intBool==2) {
@@ -299,17 +276,14 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 					bool=false;
 					for(int i=16;i<32;i++) {
 						if(kx==tabPos[i][0] && ky==tabPos[i][1]) {
-							tabPiece[32]=tabPiece[i];
-							tabPos[32][0]=kx;
-							tabPos[32][1]=ky;
 							indBougee=i;
 							bool=true;
 						}
 					}
 					
-					if(!bool){
+					if(!bool || deplacementsVerifiees(indBougee).length==0){
 						intBool=2;
-						System.out.println("Choisissez une pièce blanche");
+						System.out.println("Choisissez une pièce parmi celles en surbrillance");
 						sound(new File("Warning.WAV"));
 					}
 					if(intBool==3) {
@@ -341,14 +315,9 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 							}else {
 								posXRectEchec=0;posYRectEchec=0;
 							}
-							imageEffacee=null;
-							
-						}/*else {
-							anteRemove();
-							imageEffacee=null;
-						}*/
+						}
 						repaint();
-						if(echecMat()==true) {	
+						if(echecMat(0)==true) {	
 							message="Les Noirs ont perdu";
 							sound(new File("tada.WAV"));
 							new replayFenestra(message);
@@ -591,7 +560,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4))
 						{tabAutor[k+i][11][0]=x+9999-width*5 ; tabAutor[k+i][11][1]=y+9999+height*5;}
 					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5))
-						{tabAutor[k+i][12][0]=x+9999-width*6 ; tabAutor[k+i][12][1]=y+9999+height*6;}
+						{tabAutor[k+i][13][0]=x+9999-width*7  ; tabAutor[k+i][13][1]=y+9999+height*6;}
 					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5) && !verifBlackAndWhite(x-width*6, y+height*6)) 
 						{tabAutor[k+i][13][0]=x+9999-width*7  ; tabAutor[k+i][13][1]=y+9999+height*7 ;}
 					
@@ -621,7 +590,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4))
 						{tabAutor[k+i][25][0]=x+9999-width*5; ; tabAutor[k+i][25][1]=y+9999-height*5;}
 					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5)) 
-						{tabAutor[k+i][26][0]=y+9999-height*6 ; tabAutor[k+i][26][1]=y+9999-height*6;}
+						{tabAutor[k+i][26][0]=x+9999-height*6 ; tabAutor[k+i][26][1]=y+9999-height*6;}
 					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5) && !verifWhite(x-width*6, y-height*6))
 						{tabAutor[k+i][27][0]=x+9999-width*7 ; tabAutor[k+i][27][1]=y+9999-height*7;}
 				}
@@ -776,21 +745,21 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 			if(tabPiece[j]!=tabPiece[i] && tabPos[j][0]==tabPos[i][0] && tabPos[j][1]==tabPos[i][1]) {
 				tabPos[i][0]+=9999;
 				tabPos[i][1]+=9999;
-				tabPiece[33]=tabPiece[i];
+				tabPiece[32]=tabPiece[i];
 				bool=true;
 			}
 		}	
 		if(!bool)
-			tabPiece[33]=null;
+			tabPiece[32]=null;
 	}
 	
 	public void anteRemove() {
 		boolean bool=false;
 		for (int i=1;i<32;i++) {
-			if(tabPiece[33]==tabPiece[i]) {
+			if(tabPiece[32]==tabPiece[i]) {
 				tabPos[i][0]-=9999;
 				tabPos[i][1]-=9999;
-			bool=true;
+				bool=true;
 			}
 		}
 		if(!bool)
@@ -826,9 +795,23 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	}
 	
 	
-	public boolean echecMat() {
-		if(piecesAppuyables().length>0)
-			return false;
+	public boolean echecMat(int r) {
+		/*if(piecesAppuyables().length>0)
+			return false;*/
+		if(r==0) {
+			for(int i=0;i<16;i++) {
+				if(deplacementsVerifiees(i).length>0) {
+					return false;
+				}
+			}
+		}
+		if(r==16) {
+			for(int i=16;i<32;i++) {
+				if(deplacementsVerifiees(i).length>0) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 
@@ -859,7 +842,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 		for(int i=0;i<k;i++) {
 			tabVerifFin[i]=tabVerif[i];
 		}
-		return tabVerif;
+		return tabVerifFin;
 	}
 	
 	public boolean verifVerif(int j,int x,int y) {
@@ -872,16 +855,14 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	}
 	
 	//VERIFIER CE QUI SUIT
-	public ImageIcon[] piecesAppuyables() {
-		int[][] tabVerif;
-		ImageIcon[] tab = new ImageIcon[16];
+	/*public int[] piecesAppuyables() {
+		int[] tab = new int[16];
 		int k=0;
-		ImageIcon[] tabAppuyable;
+		int[] tabAppuyable;
 		if(intBool==0||intBool==1) {
 			for(int i=0;i<16;i++) {
-				tabVerif=deplacementsVerifiees(i);
-				if(tabVerif.length>0) {
-					tab[k]=tabPiece[i];
+				if(deplacementsVerifiees(i).length>0) {
+					tab[k]=i;
 					k++;
 				}
 			}
@@ -889,28 +870,26 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 		
 		else if(intBool==3||intBool==2) {
 			for(int i=16;i<32;i++) {
-				tabVerif=deplacementsVerifiees(i);
-				tabVerif=deplacementsVerifiees(i);
-				if(tabVerif.length>0) {
-					tab[i-16]=tabPiece[i];
+				if(deplacementsVerifiees(i).length>0) {
+					tab[i-16]=i;
 					k++;
 				}		
 			}
 		}
-		tabAppuyable=new ImageIcon[k];
+		tabAppuyable=new int[k];
 		for(int i=0;i<k;i++) {
 			tabAppuyable[i]=tab[i];
 		}
 		return tabAppuyable;
 	}
 	public boolean verifAppuyable(int j) {
-		ImageIcon[] tabAppuyable=piecesAppuyables();
+		int[] tabAppuyable=piecesAppuyables();
 		for(int i=0;i<tabAppuyable.length;i++) {
-			if(tabPiece[j]==tabAppuyable[i]) {
+			if(tabPiece[j]==tabPiece[i]) {
 				return true;
 			}
 		}
 		return false;
-	}
+	}*/
 }
 	
