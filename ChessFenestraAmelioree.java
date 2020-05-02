@@ -92,11 +92,11 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	int[][] tabPos=new int[34][2];
 	int width=600/8;
 	int height=560/8;
-	{/*tabPos[0][1]=height*7+37;tabPos[0][0]=width*4;
+	{tabPos[0][1]=height*7+37;tabPos[0][0]=width*4;
 	tabPos[1][1]=height*7+37;tabPos[1][0]=width*3;
-	tabPos[2][1]=height*7+37;tabPos[2][0]=width*2;*/
+	tabPos[2][1]=height*7+37;tabPos[2][0]=width*2;
 	tabPos[3][1]=height*7+37;tabPos[3][0]=width*5;
-	/*tabPos[4][1]=height*7+37;tabPos[4][0]=0;
+	tabPos[4][1]=height*7+37;tabPos[4][0]=0;
 	tabPos[5][1]=height*7+37;tabPos[5][0]=width*7;
 	tabPos[6][1]=height*7+37;tabPos[6][0]=width*6;
 	tabPos[7][1]=height*7+37;tabPos[7][0]=width;
@@ -109,9 +109,9 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	tabPos[14][0]=width*7;tabPos[14][1]=height*6+37;
 	tabPos[15][0]=width*2;tabPos[15][1]=height*6+37;
 	tabPos[16][1]=37;tabPos[16][0]=width*4;
-	tabPos[17][1]=37;tabPos[17][0]=width*3;*/
+	tabPos[17][1]=37;tabPos[17][0]=width*3;
 	tabPos[18][1]=37;tabPos[18][0]=width*2;
-	/*tabPos[19][1]=37;tabPos[19][0]=width*5;
+	tabPos[19][1]=37;tabPos[19][0]=width*5;
 	tabPos[20][1]=37;tabPos[20][0]=0;
 	tabPos[21][1]=37;tabPos[21][0]=width*7;
 	tabPos[22][1]=37;tabPos[22][0]=width*6;
@@ -123,7 +123,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	tabPos[28][0]=width*5;tabPos[28][1]=height+37;
 	tabPos[29][0]=width*6;tabPos[29][1]=height+37;
 	tabPos[30][0]=width*7;tabPos[30][1]=height+37;
-	tabPos[31][0]=0;tabPos[31][1]=height+37;*/
+	tabPos[31][0]=0;tabPos[31][1]=height+37;
 	}
 	
 	
@@ -226,7 +226,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 					
 					if(!bool || deplacementsVerifiees(indBougee).length==0){
 						intBool=0;
-						System.out.println("Choisissez une pièce parmi celles en surbrillance");
+						System.out.println("Choisissez une piÃ¨ce parmi celles en surbrillance");
 						sound(new File("Warning.WAV"));
 					}
 					if(intBool==1) {
@@ -283,7 +283,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 					
 					if(!bool || deplacementsVerifiees(indBougee).length==0){
 						intBool=2;
-						System.out.println("Choisissez une pièce parmi celles en surbrillance");
+						System.out.println("Choisissez une piÃ¨ce parmi celles en surbrillance");
 						sound(new File("Warning.WAV"));
 					}
 					if(intBool==3) {
