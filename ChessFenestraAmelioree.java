@@ -6,10 +6,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.regex.PatternSyntaxException;
 
 
-class ChessFenestraAmelioree extends JFrame implements MouseListener{
+class ChessFenestraAmelioree extends JFrame implements MouseListener, KeyListener{
 	public void sound(File path) {
 		try{
 			Clip clip= AudioSystem.getClip();
@@ -126,6 +127,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	tabPos[31][0]=0;tabPos[31][1]=height+37;
 	}
 	
+	ArrayList<String> listPos =new ArrayList<String>();
 	
 	int indBougee;
 	int posXRectEchec=0,posYRectEchec=0;
@@ -139,6 +141,7 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 		setResizable(false);
 		setVisible(true);
 		addMouseListener(this);
+		addKeyListener(this);
 		setVisible(true);	
 		
 	}
@@ -146,6 +149,14 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	
 	public void paint(Graphics g) {
 		super.paint(g);
+		for(int i=0;i<=7;i++) {
+			for(int j=0;j<=7;j++) {
+				if(j%2==0 && i%2==0 || j%2==1 && i%2==1) {
+					g.setColor(Color.black);
+				}else g.setColor(Color.white);
+				g.fillRect(width*j, height*i+37, width, height);
+			}
+		}
 		for(int i=0;i<32;i++) {
 			if(tabPos[i][0]<700) {
 				tabPiece[i].paintIcon(this, g, tabPos[i][0],tabPos[i][1]);
@@ -153,27 +164,27 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 		}
 				
 		((Graphics2D)g).setStroke(new BasicStroke(4.0f));
-		g.setColor(Color.DARK_GRAY);
-		g.drawLine(width, 0, width, 597);
-		g.drawLine(width*2, 0, width*2, 597);
-		g.drawLine(width*3, 0, width*3, 597);
-		g.drawLine(width*4, 0, width*4, 597);
-		g.drawLine(width*5, 0, width*5, 597);
-		g.drawLine(width*6, 0, width*6, 597);
-		g.drawLine(width*7, 0, width*7, 597);
-	
+		g.setColor(Color.DARK_GRAY);	
 		g.fillRect(0, 0, 600, 37);
 		g.fillRect(0, 0, 10, 600);
 		g.fillRect(590, 0, 10, 600);
 		g.fillRect(0, 595, 600, 15);
-		g.drawLine(0, height+37, 600, height+37);
-		g.drawLine(0, height*2+37, 600, height*2+37);
-		g.drawLine(0, height*3+37, 600, height*3+37);
-		g.drawLine(0, height*4+37, 600, height*4+37);
-		g.drawLine(0, height*5+37, 600, height*5+37);
-		g.drawLine(0, height*6+37, 600, height*6+37);
-		g.drawLine(0, height*7+37, 600, height*7+37);
-			
+		g.drawLine(0,37, 0, height*8+37);
+		g.drawLine(width, 37, width, height*8+37);
+		g.drawLine(width*2, 37, width*2, height*8+37);
+		g.drawLine(width*3, 37, width*3, height*8+37);
+		g.drawLine(width*4, 37, width*4, height*8+37);
+		g.drawLine(width*5, 37, width*5, height*8+37);
+		g.drawLine(width*6, 37, width*6, height*8+37);
+		g.drawLine(width*7, 37, width*7, height*8+37);
+		g.drawLine(0, 37+height, width*8, 37+height);
+		g.drawLine(0, 37+height*2, width*8, 37+height*2);
+		g.drawLine(0, 37+height*3, width*8, 37+height*3);
+		g.drawLine(0, 37+height*4, width*8, 37+height*4);
+		g.drawLine(0, 37+height*5, width*8, 37+height*5);
+		g.drawLine(0, 37+height*6, width*8, 37+height*6);
+		g.drawLine(0, 37+height*7, width*8, 37+height*7);
+
 		
 		g.setColor(Color.blue);
 		((Graphics2D)g).setStroke(new BasicStroke(5.0f));
@@ -223,10 +234,9 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 							bool=true;
 						}
 					}
-					
 					if(!bool || deplacementsVerifiees(indBougee).length==0){
 						intBool=0;
-						System.out.println("Choisissez une piÃ¨ce parmi celles en surbrillance");
+						System.out.println("Choisissez une pièce parmi celles en surbrillance");
 						sound(new File("Warning.WAV"));
 					}
 					if(intBool==1) {
@@ -246,13 +256,14 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 							sound(new File("Warning.WAV"));
 						}
 						else {
+								listPos.add(indBougee+"%"+tabPos[indBougee][0]+"#"+tabPos[indBougee][1]);
 								tabPos[indBougee][0]=kx;
 								tabPos[indBougee][1]=ky;
 								remove(indBougee);
 							}
 							
 						if(intBool==2) {
-							if(echec(tabPiece[16])) {
+							if(echec(16)) {
 								posXRectEchec=tabPos[16][0];
 								posYRectEchec=tabPos[16][1];
 							}else {
@@ -265,11 +276,10 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 							sound(new File("tada.WAV"));
 							new replayFenestra(message);
 						}
-						
 				}	
 				
 				//***************************************************
-				if(intBool==2) {
+				else if(intBool==2) {
 					int kx=((int) Math.floor(x/width))*width;
 					int	ky=((int) Math.floor((y-37)/height))*height+37;
 					intBool=3;
@@ -280,10 +290,10 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 							bool=true;
 						}
 					}
-					
+					System.out.println( !bool);
 					if(!bool || deplacementsVerifiees(indBougee).length==0){
 						intBool=2;
-						System.out.println("Choisissez une piÃ¨ce parmi celles en surbrillance");
+						System.out.println("Choisissez une pièce parmi celles en surbrillance");
 						sound(new File("Warning.WAV"));
 					}
 					if(intBool==3) {
@@ -303,13 +313,14 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 							sound(new File("Warning.WAV"));
 						}
 						else {
+								listPos.add(indBougee+"%"+tabPos[indBougee][0]+"#"+tabPos[indBougee][1]);
 								tabPos[indBougee][0]=kx;
 								tabPos[indBougee][1]=ky;
 								remove(indBougee);
 							}
 							
 						if(intBool==0) {
-							if(echec(tabPiece[0])) {
+							if(echec(0)) {
 								posXRectEchec=tabPos[0][0];
 								posYRectEchec=tabPos[0][1];
 							}else {
@@ -325,47 +336,23 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 					}
 			}
 	}
-
-
-
-
-
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
-
-
-
-
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
-
-
-
-
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub	
 	}
-
-
-
-
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
-	
-	
-	
-	
+
 	public boolean verifBlack(int x,int y) {
 		for(int i=16;i<32;i++) {
 			if(x==tabPos[i][0] && y==tabPos[i][1]) {
@@ -391,353 +378,338 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	
 	
 	
-	public int[][][] deplacementsAutorises() {
-		int[][][] tabAutor=new int[32][56][2];
+	
+	public int[][] deplacementsAutorises(int j) {
+		int[][] tabAutor=new int[56][2];
 		int x,y;
 		int k=0;
-		while(k<=16) {
+		x=tabPos[j][0];y=tabPos[j][1];
 				//********roiWhite****
-				x=tabPos[k][0];y=tabPos[k][1];
-				tabAutor[k+0][0][0]=x+width+9999 ; tabAutor[k+0][0][1]=y+9999 ; 
-				tabAutor[k+0][1][0]=x-width+9999 ; tabAutor[k+0][1][1]=y+9999 ; 
-				tabAutor[k+0][2][0]=x ; tabAutor[k+0][2][1]=y+9999-height ; 
-				tabAutor[k+0][3][0]=x+width+9999 ; tabAutor[k+0][3][1]=y+9999+height;
-				tabAutor[k+0][4][0]=x ; tabAutor[k+0][4][1]=y+9999+height; 
-				tabAutor[k+0][6][0]=x-width+9999 ; tabAutor[k+0][6][1]=y+9999+height;
-				tabAutor[k+0][5][0]=x+width+9999 ; tabAutor[k+0][5][1]=y+9999-height ; 
-				tabAutor[k+0][7][0]=x-width+9999 ; tabAutor[k+0][7][1]=y+9999-height ;
+				if(j==0||j==16) {
+					tabAutor[0][0]=x+width+9999 ; tabAutor[0][1]=y+9999 ; 
+					tabAutor[1][0]=x-width+9999 ; tabAutor[1][1]=y+9999 ; 
+					tabAutor[2][0]=x ; tabAutor[2][1]=y+9999-height ; 
+					tabAutor[3][0]=x+width+9999 ; tabAutor[3][1]=y+9999+height;
+					tabAutor[4][0]=x ; tabAutor[4][1]=y+9999+height; 
+					tabAutor[6][0]=x-width+9999 ; tabAutor[6][1]=y+9999+height;
+					tabAutor[5][0]=x+width+9999 ; tabAutor[5][1]=y+9999-height ; 
+					tabAutor[7][0]=x-width+9999 ; tabAutor[7][1]=y+9999-height ;
+				}
+				
 
 				//***********reineWhite************
-				x=tabPos[1+k][0];y=tabPos[k+1][1];
-				tabAutor[k+1][0][0]=x+9999+width ; tabAutor[k+1][0][1]=y+9999;	
-				 if(!verifBlackAndWhite(x+width, y))
-					 {tabAutor[k+1][1][0]=x+9999+width*2 ; tabAutor[k+1][1][1]=y+9999;}
-				if(!verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
-					{tabAutor[k+1][2][0]=x+9999+width*3 ; tabAutor[k+1][2][1]=y+9999;}
-				if(!verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y))
-					{tabAutor[k+1][3][0]=x+9999+width*4 ; tabAutor[k+1][3][1]=y+9999;}
-				if(!verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
-					{tabAutor[k+1][4][0]=x+9999+width*5 ; tabAutor[k+1][4][1]=y+9999;}
-				if(!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
-					{tabAutor[k+1][5][0]=x+9999+width*6 ; tabAutor[k+1][5][1]=y+9999;}
-				if( !verifBlackAndWhite(x+width*6, y)&&!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
-					{tabAutor[k+1][6][0]=x+9999+width*7 ; tabAutor[k+1][6][1]=y+9999;}
-					
-				tabAutor[k+1][13][0]=x+9999-width ; tabAutor[k+1][13][1]=y+9999;
-				if(!verifBlackAndWhite(x-width, y))
-					{tabAutor[k+1][7][0]=x+9999-width*2 ; tabAutor[k+1][7][1]=y+9999;}
-				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y))
-					{tabAutor[k+1][8][0]=x+9999-width*3 ; tabAutor[k+1][8][1]=y+9999;}
-				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y))
-					{tabAutor[k+1][9][0]=x+9999-width*4 ; tabAutor[k+1][9][1]=y+9999;}
-				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y)) 
-					{tabAutor[k+1][10][0]=x+9999-width*5 ; tabAutor[k+1][10][1]=y+9999;}
-				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y))
-					{tabAutor[k+1][11][0]=x+9999-width*6 ; tabAutor[k+1][11][1]=y+9999;}
-				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y) && !verifBlackAndWhite(x-width*6, y)) 
-					{tabAutor[k+1][12][0]=x+9999-width*7 ; tabAutor[k+1][12][1]=y+9999;}
-					
-				tabAutor[k+1][14][1]=y+9999+height ; tabAutor[k+1][14][0]=x+9999; 	
-				if(!verifBlackAndWhite(x, y+height)) 
-					{tabAutor[k+1][27][1]=y+9999+height*2 ; tabAutor[k+1][27][0]=x+9999;} 
-				if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2)) 
-					{tabAutor[k+1][15][1]=y+9999+height*3 ; tabAutor[k+1][15][0]=x+9999;} 
-				if( !verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3))
-					{tabAutor[k+1][16][1]=y+9999+height*4 ; tabAutor[k+1][16][0]=x+9999;} 
-				if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4))
-					{tabAutor[k+1][17][1]=y+9999+height*5 ; tabAutor[k+1][17][0]=x+9999;} 
-				if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5))
-					{tabAutor[k+1][18][1]=y+9999+height*6 ; tabAutor[k+1][18][0]=x+9999;} 
-				if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5) && !verifWhite(x, y+height*6)) 
-					{tabAutor[k+1][19][1]=y+9999+height*7 ; tabAutor[k+1][19][0]=x+9999;} 
-					
-					
-				tabAutor[k+1][20][1]=y+9999-height ; tabAutor[k+1][20][0]=x+9999 ;	
-				if(!verifBlackAndWhite(x, y-height))
-					{tabAutor[k+1][21][1]=y+9999-height*2 ; tabAutor[k+1][21][0]=x+9999 ;}
-				if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2))
-					{tabAutor[k+1][22][1]=y+9999-height*3 ; tabAutor[k+1][22][0]=x+9999 ;}
-				if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3))
-					{tabAutor[k+1][23][1]=y+9999-height*4 ; tabAutor[k+1][23][0]=x+9999;}
-				if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)) 
-					{tabAutor[k+1][24][1]=y+9999-5*height ; tabAutor[k+1][24][0]=x+9999 ;}
-				if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4) && !verifBlackAndWhite(x, y-height*5))
-					{tabAutor[k+1][25][1]=y+9999-6*height ; tabAutor[k+1][25][0]=x+9999;}
-				if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)  && !verifBlackAndWhite(x, y-height*5)&& !verifBlackAndWhite(x, y-height*6))
-					{tabAutor[k+1][26][1]=y+9999-height*7 ; tabAutor[k+1][26][0]=x+9999;}
-					
-				tabAutor[k+1][28][0]=x+9999+width;tabAutor[k+1][28][1]=y+9999+height;	
-				if( !verifBlackAndWhite(x+width, y+height))
-					{tabAutor[k+1][29][0]=x+9999+width*2 ; tabAutor[k+1][29][1]=y+9999+height*2;}
-				if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2))
-					{tabAutor[k+1][30][0]=x+9999+width*3 ; tabAutor[k+1][30][1]=y+9999+height*3 ;}
-				if( !verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3))
-					{tabAutor[k+1][31][0]=x+9999+width*4 ; tabAutor[k+1][31][1]=y+9999+4*height ;}
-				if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4)) 
-					{tabAutor[k+1][32][0]=x+9999+width*5 ; tabAutor[k+1][32][1]=y+9999+height*5 ;}
-					
-				if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5))
-					{tabAutor[k+1][33][0]=x+9999+width*6 ; tabAutor[k+1][33][1]=y+9999+height*6 ;}
-				if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5) && !verifWhite(x+width*6, y+height*6)) 
-					{tabAutor[k+1][34][0]=x+9999+width*7 ; tabAutor[k+1][34][1]=y+9999+height*7;}
-				
-				tabAutor[k+1][35][0]=x+9999-width ; tabAutor[k+1][35][1]=y+9999+height;
-					
-				if(!verifBlackAndWhite(x-width, y+height))
-					{tabAutor[k+1][36][0]=x+9999-width*2 ; tabAutor[k+1][36][1]=y+9999+height*2;}
-				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2)) 
-					{tabAutor[k+1][37][0]=x+9999-width*3 ; tabAutor[k+1][37][1]=y+9999+height*3;}
-				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3))
-					{tabAutor[k+1][38][0]=x+9999-width*4 ; tabAutor[k+1][38][1]=y+9999+4*height;}
-				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4))
-					{tabAutor[k+1][39][0]=x+9999-width*5 ; tabAutor[k+1][39][1]=y+9999+height*5;}
-				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5))
-					{tabAutor[k+1][40][0]= x-width*6 ; tabAutor[k+1][40][1]=y+9999+height*6;}
-				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5) && !verifBlackAndWhite(x-width*6, y+height*6)) 
-					{tabAutor[k+1][41][0]=x+9999-width*7  ; tabAutor[k+1][41][1]=y+9999+height*7 ;}
-				
-				tabAutor[k+1][42][0]=x+9999+width ; tabAutor[k+1][42][1]=y+9999-height; 
-					
-				if(!verifBlackAndWhite(x+width, y-height))
-					{tabAutor[k+1][43][0]=x+9999+width*2 ; tabAutor[k+1][43][1]=y+9999-height*2;}
-				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2))
-					{tabAutor[k+1][44][0]=x+9999+width*3 ; tabAutor[k+1][44][1]=y+9999-height*3;}
-				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3))
-					{tabAutor[k+1][45][0]=x+9999+width*4 ; tabAutor[k+1][45][1]=y+9999-4*height;}
-				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4))
-					{tabAutor[k+1][46][0]=x+9999+width*5 ; tabAutor[k+1][46][1]=y+9999-height*5;}
-				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5)) 
-					{tabAutor[k+1][47][0]=x+9999+width*6 ; tabAutor[k+1][47][1]=y+9999-height*6;} 
-				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5) && !verifBlackAndWhite(x+width*6, y-height*6))
-					{tabAutor[k+1][48][0]=x+9999+width*7 ; tabAutor[k+1][48][1]= y-height*7;}
-					
-				tabAutor[k+1][49][0]=x+9999-width ; tabAutor[k+1][49][1]=y+9999-height;
-					
-				if(!verifBlackAndWhite(x-width, y-height))
-					{tabAutor[k+1][50][0]=x+9999-width*2 ; tabAutor[k+1][50][1]=y+9999-height*2;}
-				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2)) 
-					{tabAutor[k+1][51][0]=x+9999-width*3; ; tabAutor[k+1][51][1]=y+9999-height*3;}
-				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3))
-					{tabAutor[k+1][52][0]=x+9999-width*4; ; tabAutor[k+1][52][1]=y+9999-height*4;}
-				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4))
-					{tabAutor[k+1][53][0]=x+9999-width*5; ; tabAutor[k+1][53][1]=y+9999-height*5;}
-				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5)) 
-					{tabAutor[k+1][54][0]=x+9999-height*6 ; tabAutor[k+1][54][1]=y+9999-height*6;}
-				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5) && !verifWhite(x-width*6, y-height*6))
-					{tabAutor[k+1][55][0]=x+9999-width*7 ; tabAutor[k+1][55][1]=y+9999-height*7;}
-				
-			
-				//********fouWhite******************
-				for(int i=2;i<4;i++) {
-					x=tabPos[i+k][0];y=tabPos[i+k][1];
-					tabAutor[k+i][0][0]=x+9999+width ; tabAutor[k+i][0][1]=y+9999+height;
+				if(j==1||j==17) {	
+					tabAutor[0][0]=x+9999+width ; tabAutor[0][1]=y+9999;	
+					 if(!verifBlackAndWhite(x+width, y))
+						 {tabAutor[1][0]=x+9999+width*2 ; tabAutor[1][1]=y+9999;}
+					if(!verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+						{tabAutor[2][0]=x+9999+width*3 ; tabAutor[2][1]=y+9999;}
+					if(!verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y))
+						{tabAutor[3][0]=x+9999+width*4 ; tabAutor[3][1]=y+9999;}
+					if(!verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+						{tabAutor[4][0]=x+9999+width*5 ; tabAutor[4][1]=y+9999;}
+					if(!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+						{tabAutor[5][0]=x+9999+width*6 ; tabAutor[5][1]=y+9999;}
+					if( !verifBlackAndWhite(x+width*6, y)&&!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+						{tabAutor[6][0]=x+9999+width*7 ; tabAutor[6][1]=y+9999;}
 						
+					tabAutor[13][0]=x+9999-width ; tabAutor[13][1]=y+9999;
+					if(!verifBlackAndWhite(x-width, y))
+						{tabAutor[7][0]=x+9999-width*2 ; tabAutor[7][1]=y+9999;}
+					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y))
+						{tabAutor[8][0]=x+9999-width*3 ; tabAutor[8][1]=y+9999;}
+					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y))
+						{tabAutor[9][0]=x+9999-width*4 ; tabAutor[9][1]=y+9999;}
+					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y)) 
+						{tabAutor[10][0]=x+9999-width*5 ; tabAutor[10][1]=y+9999;}
+					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y))
+						{tabAutor[11][0]=x+9999-width*6 ; tabAutor[11][1]=y+9999;}
+					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y) && !verifBlackAndWhite(x-width*6, y)) 
+						{tabAutor[12][0]=x+9999-width*7 ; tabAutor[12][1]=y+9999;}
+						
+					tabAutor[14][1]=y+9999+height ; tabAutor[14][0]=x+9999; 	
+					if(!verifBlackAndWhite(x, y+height)) 
+						{tabAutor[27][1]=y+9999+height*2 ; tabAutor[27][0]=x+9999;} 
+					if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2)) 
+						{tabAutor[15][1]=y+9999+height*3 ; tabAutor[15][0]=x+9999;} 
+					if( !verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3))
+						{tabAutor[16][1]=y+9999+height*4 ; tabAutor[16][0]=x+9999;} 
+					if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4))
+						{tabAutor[17][1]=y+9999+height*5 ; tabAutor[17][0]=x+9999;} 
+					if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5))
+						{tabAutor[18][1]=y+9999+height*6 ; tabAutor[18][0]=x+9999;} 
+					if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5) && !verifWhite(x, y+height*6)) 
+						{tabAutor[19][1]=y+9999+height*7 ; tabAutor[19][0]=x+9999;} 
+						
+						
+					tabAutor[20][1]=y+9999-height ; tabAutor[20][0]=x+9999 ;	
+					if(!verifBlackAndWhite(x, y-height))
+						{tabAutor[21][1]=y+9999-height*2 ; tabAutor[21][0]=x+9999 ;}
+					if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2))
+						{tabAutor[22][1]=y+9999-height*3 ; tabAutor[22][0]=x+9999 ;}
+					if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3))
+						{tabAutor[23][1]=y+9999-height*4 ; tabAutor[23][0]=x+9999;}
+					if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)) 
+						{tabAutor[24][1]=y+9999-5*height ; tabAutor[24][0]=x+9999 ;}
+					if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4) && !verifBlackAndWhite(x, y-height*5))
+						{tabAutor[25][1]=y+9999-6*height ; tabAutor[25][0]=x+9999;}
+					if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)  && !verifBlackAndWhite(x, y-height*5)&& !verifBlackAndWhite(x, y-height*6))
+						{tabAutor[26][1]=y+9999-height*7 ; tabAutor[26][0]=x+9999;}
+						
+					tabAutor[28][0]=x+9999+width;tabAutor[28][1]=y+9999+height;	
 					if( !verifBlackAndWhite(x+width, y+height))
-						{tabAutor[k+i][1][0]=x+9999+width*2 ; tabAutor[k+i][1][1]=y+9999+height*2  ;}
-						
+						{tabAutor[29][0]=x+9999+width*2 ; tabAutor[29][1]=y+9999+height*2;}
 					if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2))
-						{tabAutor[k+i][2][0]=x+9999+width*3 ; tabAutor[k+i][2][1]=y+9999+height*3 ;}
+						{tabAutor[30][0]=x+9999+width*3 ; tabAutor[30][1]=y+9999+height*3 ;}
 					if( !verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3))
-						{tabAutor[k+i][3][0]=x+9999+width*4 ; tabAutor[k+i][3][1]=y+9999+4*height ;}
+						{tabAutor[31][0]=x+9999+width*4 ; tabAutor[31][1]=y+9999+4*height ;}
 					if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4)) 
-						{tabAutor[k+i][4][0]=x+9999+width*5 ; tabAutor[k+i][4][1]=y+9999+height*5 ;}
+						{tabAutor[32][0]=x+9999+width*5 ; tabAutor[32][1]=y+9999+height*5 ;}
 						
 					if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5))
-						{tabAutor[k+i][5][0]=x+9999+width*6 ; tabAutor[k+i][5][1]=y+9999+height*6 ;}
+						{tabAutor[33][0]=x+9999+width*6 ; tabAutor[33][1]=y+9999+height*6 ;}
 					if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5) && !verifWhite(x+width*6, y+height*6)) 
-						{tabAutor[k+i][6][0]=x+9999+width*7 ; tabAutor[k+i][6][1]=y+9999+height*7;}
+						{tabAutor[34][0]=x+9999+width*7 ; tabAutor[34][1]=y+9999+height*7;}
 					
-					tabAutor[k+i][7][0]=x+9999-width ; tabAutor[k+i][7][1]=y+9999+height;
+					tabAutor[35][0]=x+9999-width ; tabAutor[35][1]=y+9999+height;
 						
 					if(!verifBlackAndWhite(x-width, y+height))
-						{tabAutor[k+i][8][0]=x+9999-width*2 ; tabAutor[k+i][8][1]=y+9999+height*2;}
-						
+						{tabAutor[36][0]=x+9999-width*2 ; tabAutor[36][1]=y+9999+height*2;}
 					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2)) 
-						{tabAutor[k+i][9][0]=x+9999-width*3 ; tabAutor[k+i][9][1]=y+9999+height*3;}
-						
+						{tabAutor[37][0]=x+9999-width*3 ; tabAutor[37][1]=y+9999+height*3;}
 					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3))
-						{tabAutor[k+i][10][0]=x+9999-width*4 ; tabAutor[k+i][10][1]=y+9999+4*height;}
+						{tabAutor[38][0]=x+9999-width*4 ; tabAutor[38][1]=y+9999+4*height;}
 					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4))
-						{tabAutor[k+i][11][0]=x+9999-width*5 ; tabAutor[k+i][11][1]=y+9999+height*5;}
+						{tabAutor[39][0]=x+9999-width*5 ; tabAutor[39][1]=y+9999+height*5;}
 					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5))
-						{tabAutor[k+i][13][0]=x+9999-width*7  ; tabAutor[k+i][13][1]=y+9999+height*6;}
+						{tabAutor[40][0]= x-width*6 ; tabAutor[40][1]=y+9999+height*6;}
 					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5) && !verifBlackAndWhite(x-width*6, y+height*6)) 
-						{tabAutor[k+i][13][0]=x+9999-width*7  ; tabAutor[k+i][13][1]=y+9999+height*7 ;}
+						{tabAutor[41][0]=x+9999-width*7  ; tabAutor[41][1]=y+9999+height*7 ;}
 					
-					tabAutor[k+i][14][0]=x+9999+width ; tabAutor[k+i][14][1]=y+9999-height; 
+					tabAutor[42][0]=x+9999+width ; tabAutor[42][1]=y+9999-height; 
 						
 					if(!verifBlackAndWhite(x+width, y-height))
-						{tabAutor[k+i][15][0]=x+9999+width*2 ; tabAutor[k+i][15][1]=y+9999-height*2;}
+						{tabAutor[43][0]=x+9999+width*2 ; tabAutor[43][1]=y+9999-height*2;}
 					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2))
-						{tabAutor[k+i][16][0]=x+9999+width*3 ; tabAutor[k+i][16][1]=y+9999-height*3;}
+						{tabAutor[44][0]=x+9999+width*3 ; tabAutor[44][1]=y+9999-height*3;}
 					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3))
-						{tabAutor[k+i][17][0]=x+9999+width*4 ; tabAutor[k+i][17][1]=y+9999-4*height;}
+						{tabAutor[45][0]=x+9999+width*4 ; tabAutor[45][1]=y+9999-4*height;}
 					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4))
-						{tabAutor[k+i][18][0]=x+9999+width*5 ; tabAutor[k+i][18][1]=y+9999-height*5;}
+						{tabAutor[46][0]=x+9999+width*5 ; tabAutor[46][1]=y+9999-height*5;}
 					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5)) 
-						{tabAutor[k+i][19][0]=x+9999+width*6 ; tabAutor[k+i][19][1]=y+9999-height*6; }
+						{tabAutor[47][0]=x+9999+width*6 ; tabAutor[47][1]=y+9999-height*6;} 
 					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5) && !verifBlackAndWhite(x+width*6, y-height*6))
-						{tabAutor[k+i][20][0]=x+9999+width*7 ; tabAutor[k+i][20][1]=y+9999+9999-height*7;}
+						{tabAutor[48][0]=x+9999+width*7 ; tabAutor[48][1]= y-height*7;}
 						
-					tabAutor[k+i][21][0]=x+9999-width ; tabAutor[k+i][21][1]=y+9999-height;
+					tabAutor[49][0]=x+9999-width ; tabAutor[49][1]=y+9999-height;
 						
 					if(!verifBlackAndWhite(x-width, y-height))
-						{tabAutor[k+i][22][0]=x+9999-width*2 ; tabAutor[k+i][22][1]=y+9999-height*2;}
+						{tabAutor[50][0]=x+9999-width*2 ; tabAutor[50][1]=y+9999-height*2;}
 					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2)) 
-						{tabAutor[k+i][23][0]=x+9999-width*3; ; tabAutor[k+i][23][1]=y+9999-height*3;}
+						{tabAutor[51][0]=x+9999-width*3; ; tabAutor[51][1]=y+9999-height*3;}
 					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3))
-						{tabAutor[k+i][24][0]=x+9999-width*4; ; tabAutor[k+i][24][1]=y+9999-height*4;}
+						{tabAutor[52][0]=x+9999-width*4; ; tabAutor[52][1]=y+9999-height*4;}
 					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4))
-						{tabAutor[k+i][25][0]=x+9999-width*5; ; tabAutor[k+i][25][1]=y+9999-height*5;}
+						{tabAutor[53][0]=x+9999-width*5; ; tabAutor[53][1]=y+9999-height*5;}
 					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5)) 
-						{tabAutor[k+i][26][0]=x+9999-height*6 ; tabAutor[k+i][26][1]=y+9999-height*6;}
+						{tabAutor[54][0]=x+9999-height*6 ; tabAutor[54][1]=y+9999-height*6;}
 					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5) && !verifWhite(x-width*6, y-height*6))
-						{tabAutor[k+i][27][0]=x+9999-width*7 ; tabAutor[k+i][27][1]=y+9999-height*7;}
+						{tabAutor[55][0]=x+9999-width*7 ; tabAutor[55][1]=y+9999-height*7;}
+				}	
+			
+				//********fouWhite******************
+				if(j==2||j==3||j==18||j==19) {
+					tabAutor[0][0]=x+9999+width ; tabAutor[0][1]=y+9999+height;
+					if( !verifBlackAndWhite(x+width, y+height))
+						{tabAutor[1][0]=x+9999+width*2 ; tabAutor[1][1]=y+9999+height*2  ;}
+						
+					if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2))
+						{tabAutor[2][0]=x+9999+width*3 ; tabAutor[2][1]=y+9999+height*3 ;}
+					if( !verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3))
+						{tabAutor[3][0]=x+9999+width*4 ; tabAutor[3][1]=y+9999+4*height ;}
+					if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4)) 
+						{tabAutor[4][0]=x+9999+width*5 ; tabAutor[4][1]=y+9999+height*5 ;}
+						
+					if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5))
+						{tabAutor[5][0]=x+9999+width*6 ; tabAutor[5][1]=y+9999+height*6 ;}
+					if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5) && !verifWhite(x+width*6, y+height*6)) 
+						{tabAutor[6][0]=x+9999+width*7 ; tabAutor[6][1]=y+9999+height*7;}
+					
+					tabAutor[7][0]=x+9999-width ; tabAutor[7][1]=y+9999+height;
+						
+					if(!verifBlackAndWhite(x-width, y+height))
+						{tabAutor[8][0]=x+9999-width*2 ; tabAutor[8][1]=y+9999+height*2;}
+						
+					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2)) 
+						{tabAutor[9][0]=x+9999-width*3 ; tabAutor[9][1]=y+9999+height*3;}
+						
+					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3))
+						{tabAutor[10][0]=x+9999-width*4 ; tabAutor[10][1]=y+9999+4*height;}
+					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4))
+						{tabAutor[11][0]=x+9999-width*5 ; tabAutor[11][1]=y+9999+height*5;}
+					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5))
+						{tabAutor[13][0]=x+9999-width*7  ; tabAutor[13][1]=y+9999+height*6;}
+					if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5) && !verifBlackAndWhite(x-width*6, y+height*6)) 
+						{tabAutor[13][0]=x+9999-width*7  ; tabAutor[13][1]=y+9999+height*7 ;}
+					
+					tabAutor[14][0]=x+9999+width ; tabAutor[14][1]=y+9999-height; 
+						
+					if(!verifBlackAndWhite(x+width, y-height))
+						{tabAutor[15][0]=x+9999+width*2 ; tabAutor[15][1]=y+9999-height*2;}
+					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2))
+						{tabAutor[16][0]=x+9999+width*3 ; tabAutor[16][1]=y+9999-height*3;}
+					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3))
+						{tabAutor[17][0]=x+9999+width*4 ; tabAutor[17][1]=y+9999-4*height;}
+					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4))
+						{tabAutor[18][0]=x+9999+width*5 ; tabAutor[18][1]=y+9999-height*5;}
+					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5)) 
+						{tabAutor[19][0]=x+9999+width*6 ; tabAutor[19][1]=y+9999-height*6; }
+					if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5) && !verifBlackAndWhite(x+width*6, y-height*6))
+						{tabAutor[20][0]=x+9999+width*7 ; tabAutor[20][1]=y+9999+9999-height*7;}
+						
+					tabAutor[21][0]=x+9999-width ; tabAutor[21][1]=y+9999-height;
+						
+					if(!verifBlackAndWhite(x-width, y-height))
+						{tabAutor[22][0]=x+9999-width*2 ; tabAutor[22][1]=y+9999-height*2;}
+					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2)) 
+						{tabAutor[23][0]=x+9999-width*3; ; tabAutor[23][1]=y+9999-height*3;}
+					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3))
+						{tabAutor[24][0]=x+9999-width*4; ; tabAutor[24][1]=y+9999-height*4;}
+					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4))
+						{tabAutor[25][0]=x+9999-width*5; ; tabAutor[25][1]=y+9999-height*5;}
+					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5)) 
+						{tabAutor[26][0]=x+9999-height*6 ; tabAutor[26][1]=y+9999-height*6;}
+					if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5) && !verifWhite(x-width*6, y-height*6))
+						{tabAutor[27][0]=x+9999-width*7 ; tabAutor[27][1]=y+9999-height*7;}
 				}
 			
 			
 				//****************tour**************
-				for(int i=4;i<6;i++) {	
-					x=tabPos[i+k][0];y=tabPos[i+k][1];
-					tabAutor[k+i][0][0]=x+9999+width ; tabAutor[k+i][0][1]=y+9999;	
+				if(j==4||j==5||j==20||j==21) {	
+					tabAutor[0][0]=x+9999+width ; tabAutor[0][1]=y+9999;	
 					 if(!verifBlackAndWhite(x+width, y))
-						 {tabAutor[k+i][1][0]=x+9999+width*2 ; tabAutor[k+i][1][1]=y+9999;}
+						 {tabAutor[1][0]=x+9999+width*2 ; tabAutor[1][1]=y+9999;}
 					if(!verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
-						{tabAutor[k+i][2][0]=x+9999+width*3 ; tabAutor[k+i][2][1]=y+9999;}
+						{tabAutor[2][0]=x+9999+width*3 ; tabAutor[2][1]=y+9999;}
 					if(!verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y))
-						{tabAutor[k+i][3][0]=x+9999+width*4 ; tabAutor[k+i][3][1]=y+9999;}
+						{tabAutor[3][0]=x+9999+width*4 ; tabAutor[3][1]=y+9999;}
 					if(!verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
-						{tabAutor[k+i][4][0]=x+9999+width*5 ; tabAutor[k+i][4][1]=y+9999;}
+						{tabAutor[4][0]=x+9999+width*5 ; tabAutor[4][1]=y+9999;}
 					if(!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
-						{tabAutor[k+i][5][0]=x+9999+width*6 ; tabAutor[k+i][5][1]=y+9999;}
+						{tabAutor[5][0]=x+9999+width*6 ; tabAutor[5][1]=y+9999;}
 					if( !verifBlackAndWhite(x+width*6, y) &&!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
-						{tabAutor[k+i][6][0]=x+9999+width*7 ; tabAutor[k+i][6][1]=y+9999;}
+						{tabAutor[6][0]=x+9999+width*7 ; tabAutor[6][1]=y+9999;}
 						
-					tabAutor[k+i][13][0]=x+9999-width ; tabAutor[k+i][13][1]=y+9999;
+					tabAutor[13][0]=x+9999-width ; tabAutor[13][1]=y+9999;
 					if(!verifBlackAndWhite(x-width, y))
-						{tabAutor[k+i][7][0]=x+9999-width*2 ; tabAutor[k+i][7][1]=y+9999;}
+						{tabAutor[7][0]=x+9999-width*2 ; tabAutor[7][1]=y+9999;}
 					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y))
-						{tabAutor[k+i][8][0]=x+9999-width*3 ; tabAutor[k+i][8][1]=y+9999;}
+						{tabAutor[8][0]=x+9999-width*3 ; tabAutor[8][1]=y+9999;}
 					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y))
-						{tabAutor[k+i][9][0]=x+9999-width*4 ; tabAutor[k+i][9][1]=y+9999;}
+						{tabAutor[9][0]=x+9999-width*4 ; tabAutor[9][1]=y+9999;}
 					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y)) 
-						{tabAutor[k+i][10][0]=x+9999-width*5 ; tabAutor[k+i][10][1]=y+9999;}
+						{tabAutor[10][0]=x+9999-width*5 ; tabAutor[10][1]=y+9999;}
 					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y))
-						{tabAutor[k+i][11][0]=x+9999-width*6 ; tabAutor[k+i][11][1]=y+9999;}
+						{tabAutor[11][0]=x+9999-width*6 ; tabAutor[11][1]=y+9999;}
 					if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y) && !verifBlackAndWhite(x-width*6, y)) 
-						{tabAutor[k+i][12][0]=x+9999-width*7 ; tabAutor[k+i][12][1]=y+9999;}
+						{tabAutor[12][0]=x+9999-width*7 ; tabAutor[12][1]=y+9999;}
 						
-					tabAutor[k+i][14][1]=y+9999+height ; tabAutor[k+i][14][0]=x+9999;
+					tabAutor[14][1]=y+9999+height ; tabAutor[14][0]=x+9999;
 					if(!verifBlackAndWhite(x, y+height)) 
-						{tabAutor[k+i][27][1]=y+9999+height*2 ; tabAutor[k+i][27][0]=x+9999;} 
+						{tabAutor[27][1]=y+9999+height*2 ; tabAutor[27][0]=x+9999;} 
 					if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2)) 
-						{tabAutor[k+i][15][1]=y+9999+height*3 ; tabAutor[k+i][15][0]=x+9999;} 
+						{tabAutor[15][1]=y+9999+height*3 ; tabAutor[15][0]=x+9999;} 
 					if( !verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3))
-						{tabAutor[k+i][16][1]=y+9999+height*4 ; tabAutor[k+i][16][0]=x+9999;} 
+						{tabAutor[16][1]=y+9999+height*4 ; tabAutor[16][0]=x+9999;} 
 					if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4))
-						{tabAutor[k+i][17][1]=y+9999+height*5 ; tabAutor[k+i][17][0]=x+9999;} 
+						{tabAutor[17][1]=y+9999+height*5 ; tabAutor[17][0]=x+9999;} 
 					if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5))
-						{tabAutor[k+i][18][1]=y+9999+height*6 ; tabAutor[k+i][18][0]=x+9999;} 
+						{tabAutor[18][1]=y+9999+height*6 ; tabAutor[18][0]=x+9999;} 
 					if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5) && !verifBlackAndWhite(x, y+height*6)) 
-						{tabAutor[k+i][19][1]=y+9999+height*7 ; tabAutor[k+i][19][0]=x+9999;} 
+						{tabAutor[19][1]=y+9999+height*7 ; tabAutor[19][0]=x+9999;} 
 						
 						
-					tabAutor[k+i][20][1]=y+9999-height ; tabAutor[k+i][20][0]=x+9999 ;	
+					tabAutor[20][1]=y+9999-height ; tabAutor[20][0]=x+9999 ;	
 					if(!verifBlackAndWhite(x, y-height))
-						{tabAutor[k+i][21][1]=y+9999-height*2 ; tabAutor[k+i][21][0]=x+9999 ;}
+						{tabAutor[21][1]=y+9999-height*2 ; tabAutor[21][0]=x+9999 ;}
 					if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2))
-						{tabAutor[k+i][22][1]=y+9999-height*3 ; tabAutor[k+i][22][0]=x+9999 ;}
+						{tabAutor[22][1]=y+9999-height*3 ; tabAutor[22][0]=x+9999 ;}
 					if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3))
-						{tabAutor[k+i][23][1]=y+9999-height*4 ; tabAutor[k+i][23][0]=x+9999;}
+						{tabAutor[23][1]=y+9999-height*4 ; tabAutor[23][0]=x+9999;}
 					if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)) 
-						{tabAutor[k+i][4][1]=y+9999-5*height ; tabAutor[k+i][4][0]=x+9999 ;}
+						{tabAutor[4][1]=y+9999-5*height ; tabAutor[4][0]=x+9999 ;}
 					if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4) && !verifBlackAndWhite(x, y-height*5))
-						{tabAutor[k+i][25][1]=y+9999-6*height ; tabAutor[k+i][25][0]=x+9999;}
+						{tabAutor[25][1]=y+9999-6*height ; tabAutor[25][0]=x+9999;}
 					if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)  && !verifBlackAndWhite(x, y-height*5)&& !verifBlackAndWhite(x, y-height*6))
-						{tabAutor[k+i][26][1]=y+9999-height*7 ; tabAutor[k+i][26][0]=x+9999;}
+						{tabAutor[26][1]=y+9999-height*7 ; tabAutor[26][0]=x+9999;}
 				}	
 				//******************cavalier*********	
-				x=tabPos[6+k][0];y=tabPos[6+k][1];
-				tabAutor[k+6][0][0]=x+9999+2*width ; tabAutor[k+6][0][1]=y+9999+height;
-				tabAutor[k+6][1][0]=x+9999+2*width ; tabAutor[k+6][1][1]=y+9999-height;
-				tabAutor[k+6][2][0]=x+9999-2*width ; tabAutor[k+6][2][1]=y+9999+height;
-				tabAutor[k+6][3][0]=x+9999-2*width ; tabAutor[k+6][3][1]=y+9999-height;
-				tabAutor[k+6][4][0]=x+9999+width ;  tabAutor[k+6][4][1]=y+9999+2*height;
-				tabAutor[k+6][5][0]=x+9999+width ; tabAutor[k+6][5][1]=y+9999-2*height;
-				tabAutor[k+6][6][0]=x+9999-width ; tabAutor[k+6][6][1]=y+9999+2*height;
-				tabAutor[k+6][7][0]=x+9999-width ; tabAutor[k+6][7][1]=y+9999-2*height;
-				
-				//cavalierWhite2;
-				x=tabPos[7+k][0];y=tabPos[7+k][1];
-				tabAutor[k+7][0][0]=x+9999+2*width ; tabAutor[k+7][0][1]=y+9999+height;
-				tabAutor[k+7][1][0]=x+9999+2*width ; tabAutor[k+7][1][1]=y+9999-height;
-				tabAutor[k+7][2][0]=x+9999-2*width ; tabAutor[k+7][2][1]=y+9999+height;
-				tabAutor[k+7][3][0]=x+9999-2*width ; tabAutor[k+7][3][1]=y+9999-height;
-				tabAutor[k+7][4][0]=x+9999+width ;  tabAutor[k+7][4][1]=y+9999+2*height;
-				tabAutor[k+7][5][0]=x+9999+width ; tabAutor[k+7][5][1]=y+9999-2*height;
-				tabAutor[k+7][6][0]=x+9999-width ; tabAutor[k+7][6][1]=y+9999+2*height;
-				tabAutor[k+7][7][0]=x+9999-width ; tabAutor[k+7][7][1]=y+9999-2*height;
-			
-			k+=16;	
-	}	
-				
+				if(j==6||j==7||j==22||j==23) {	
+					tabAutor[0][0]=x+9999+2*width ; tabAutor[0][1]=y+9999+height;
+					tabAutor[1][0]=x+9999+2*width ; tabAutor[1][1]=y+9999-height;
+					tabAutor[2][0]=x+9999-2*width ; tabAutor[2][1]=y+9999+height;
+					tabAutor[3][0]=x+9999-2*width ; tabAutor[3][1]=y+9999-height;
+					tabAutor[4][0]=x+9999+width ;  tabAutor[4][1]=y+9999+2*height;
+					tabAutor[5][0]=x+9999+width ; tabAutor[5][1]=y+9999-2*height;
+					tabAutor[6][0]=x+9999-width ; tabAutor[6][1]=y+9999+2*height;
+					tabAutor[7][0]=x+9999-width ; tabAutor[7][1]=y+9999-2*height;
+				}	
 
-		for(int i=8;i<16;i++) {
-			x=tabPos[i][0];y=tabPos[i][1];
+		if(j==8||j==9||j==10||j==11||j==12||j==13||j==14||j==15) {
 			if(y==height*6+37 && !verifBlackAndWhite(x, y-height*2) &&!verifBlackAndWhite(x, y-height)) 
-				{tabAutor[i][0][1]=y+9999-height*2 ; tabAutor[i][0][0]=x+9999;}
+				{tabAutor[0][1]=y+9999-height*2 ; tabAutor[0][0]=x+9999;}
 			if(!verifBlackAndWhite(x, y-height)) 
-				{tabAutor[i][1][1]=y+9999-height ; tabAutor[i][1][0]=x+9999;}
+				{tabAutor[1][1]=y+9999-height ; tabAutor[1][0]=x+9999;}
 			if(verifBlack(x+width,y-height))
-				{tabAutor[i][2][0]=x+9999+width ; tabAutor[i][2][1]=y+9999-height ;}
+				{tabAutor[2][0]=x+9999+width ; tabAutor[2][1]=y+9999-height ;}
 			if(verifBlack(x-width,y-height)) 
-				{tabAutor[i][3][0]=x+9999-width ; tabAutor[i][3][1]=y+9999-height ;}
+				{tabAutor[3][0]=x+9999-width ; tabAutor[3][1]=y+9999-height ;}
 		}
-		for(int i=24;i<32;i++) {
-			x=tabPos[i][0];y=tabPos[i][1];
+		if(j==24||j==25||j==26||j==27||j==28||j==29||j==30||j==31) {
 			if(y==height+37 && !verifBlackAndWhite(x, y+height*2) &&!verifBlackAndWhite(x, y+height)) 
-				{tabAutor[i][0][1]=y+9999+height*2 ; tabAutor[i][0][0]=x+9999 ;}
+				{tabAutor[0][1]=y+9999+height*2 ; tabAutor[0][0]=x+9999 ;}
 			if( !verifBlackAndWhite(x, y+height)) 
-				{tabAutor[i][1][1]=y+9999+height ; tabAutor[i][1][0]=x+9999;}
+				{tabAutor[1][1]=y+9999+height ; tabAutor[1][0]=x+9999;}
 			if(verifWhite(x+width,y+height))
-				{tabAutor[i][2][0]=x+9999+width ; tabAutor[i][2][1]=y+9999+height ;}
+				{tabAutor[2][0]=x+9999+width ; tabAutor[2][1]=y+9999+height ;}
 			if(verifWhite(x-width,y+height)) 
-				{tabAutor[i][3][0]=x+9999-width ; tabAutor[i][3][1]=y+9999+height ;}
+				{tabAutor[3][0]=x+9999-width ; tabAutor[3][1]=y+9999+height ;}
 		}	
-		for(int i=0;i<16;i++) {
-			for(int j=0;j<56;j++) {
-				if(tabAutor[i][j][0]>=9999 && tabAutor[i][j][1]>=9999) {
-					tabAutor[i][j][0]-=9999;
-					tabAutor[i][j][1]-=9999;
+		if(j<16) {
+			for(int i=0;i<56;i++) {
+				if(tabAutor[i][0]>=9999 && tabAutor[i][1]>=9999) {
+					tabAutor[i][0]-=9999;
+					tabAutor[i][1]-=9999;
 				}
 				else {
-					tabAutor[i][j][0]=2000;
-					tabAutor[i][j][1]=2000;
+					tabAutor[i][0]=2000;
+					tabAutor[i][1]=2000;
 				}
-				if(verifWhite(tabAutor[i][j][0], tabAutor[i][j][1])|| tabAutor[i][j][0]>width*7 || tabAutor[i][j][0]<0 || tabAutor[i][j][1]>height*7+37 || tabAutor[i][j][1]<37) {
-					tabAutor[i][j][0]=2000;
-					tabAutor[i][j][1]=2000;
+				if(verifWhite(tabAutor[i][0], tabAutor[i][1])|| tabAutor[i][0]>width*7 || tabAutor[i][0]<0 || tabAutor[i][1]>height*7+37 || tabAutor[i][1]<37) {
+					tabAutor[i][0]=2000;
+					tabAutor[i][1]=2000;
 				}
 			}
 		}
-		for(int i=16;i<32;i++) {
-			for(int j=0;j<56;j++) {
-				if(tabAutor[i][j][0]>=9999 && tabAutor[i][j][1]>=9999) {
-					tabAutor[i][j][0]-=9999;
-					tabAutor[i][j][1]-=9999;
+		else if(j<32) {
+			for(int i=0;i<56;i++) {
+				if(tabAutor[i][0]>=9999 && tabAutor[i][1]>=9999) {
+					tabAutor[i][0]-=9999;
+					tabAutor[i][1]-=9999;
 				}
 				else {
-					tabAutor[i][j][0]=2000;
-					tabAutor[i][j][1]=2000;
+					tabAutor[i][0]=2000;
+					tabAutor[i][1]=2000;
 				}
-				if(verifBlack(tabAutor[i][j][0], tabAutor[i][j][1])|| tabAutor[i][j][0]>width*7 || tabAutor[i][j][0]<0 || tabAutor[i][j][1]>height*7+37 || tabAutor[i][j][1]<37) {
-					tabAutor[i][j][0]=2000;
-					tabAutor[i][j][1]=2000;
+				if(verifBlack(tabAutor[i][0], tabAutor[i][1])|| tabAutor[i][0]>width*7 || tabAutor[i][0]<0 || tabAutor[i][1]>height*7+37 || tabAutor[i][1]<37) {
+					tabAutor[i][0]=2000;
+					tabAutor[i][1]=2000;
 				}
 			}
 		}
 		return tabAutor;
 	}
+
 
 	public void remove(int j) {
 		boolean bool=false;
@@ -767,33 +739,31 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 	}
 	 
 	
-	public boolean echec(ImageIcon roi) {
-		int[][][] tabAutor=deplacementsAutorises();
-		if(roi==tabPiece[0]) {
+	public boolean echec(int j) {
+		if(j==0) {
 			for(int i=16;i<32;i++) {
-				int[][] tab=tabAutor[i];
-				for(int j=0;j<56;j++) {
-					if(tab[j][0]==tabPos[0][0] && tab[j][1]==tabPos[0][1]) {
+				int[][] tab=deplacementsAutorises(i);
+				for(int k=0;k<56;k++) {
+					if(tab[k][0]==tabPos[0][0] && tab[k][1]==tabPos[0][1]) {
 						return true;
 					}
 				}
 			}
 			return false;
 		}
-		else if(roi==tabPiece[16]) {
+		else if(j==16) {
 			for(int i=0;i<16;i++) {
-				int[][] tab=tabAutor[i];
-				for(int j=0;j<56;j++) {
-					if(tab[j][0]==tabPos[16][0] && tab[j][1]==tabPos[16][1]) {
+				int[][] tab=deplacementsAutorises(i);
+				for(int k=0;k<56;k++) {
+					if(tab[k][0]==tabPos[16][0] && tab[k][1]==tabPos[16][1]) {
 						return true;
 					}
 				}
 			}
 			return false;
-		}
+		}	
 		return false;
 	}
-	
 	
 	public boolean echecMat(int r) {
 		/*if(piecesAppuyables().length>0)
@@ -820,15 +790,15 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 		int x=tabPos[j][0],y=tabPos[j][1];
 		int k=0;
 		boolean bool=true;
-		int[][] tabAutor=deplacementsAutorises()[j];
+		int[][] tabAutor=deplacementsAutorises(j);
 		for(int i=0;i<56;i++) {
 			tabPos[j][0]=tabAutor[i][0];
 			tabPos[j][1]=tabAutor[i][1];
 			remove(j);
 			if(j<16) {
-				bool=echec(tabPiece[0]);
+				bool=echec(0);
 			}
-			else bool=echec(tabPiece[16]);
+			else bool=echec(16);
 			if(!bool && tabAutor[i][0]<700 && tabAutor[i][1]>35) {
 				tabVerif[k][0]=tabAutor[i][0];
 				tabVerif[k][1]=tabAutor[i][1];
@@ -852,6 +822,38 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getKeyCode()==KeyEvent.VK_BACK_SPACE ) {
+			if(listPos.size()>0) {
+				String ch=listPos.get(listPos.size()-1);
+				int i=Integer.parseInt(ch.substring(0,ch.indexOf("%")));
+				int x=Integer.parseInt(ch.substring(ch.indexOf("%")+1,ch.indexOf("#")));
+				int y=Integer.parseInt(ch.substring(ch.indexOf("#")+1));
+				tabPos[i][0]=x;
+				tabPos[i][1]=y;
+				listPos.remove(listPos.size()-1);
+				if(intBool==2)
+					intBool=0;
+				else if(intBool==0)
+					intBool=2;
+				posXRectEchec=0;
+				posYRectEchec=0;
+				repaint();
+			}
+		}
+	}
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	//VERIFIER CE QUI SUIT
@@ -891,5 +893,353 @@ class ChessFenestraAmelioree extends JFrame implements MouseListener{
 		}
 		return false;
 	}*/
+	
+	/*public int[][][] deplacementsAutorises() {
+	int[][][] tabAutor=new int[32][56][2];
+	int x,y;
+	int k=0;
+	while(k<=16) {
+			//********roiWhite****
+			x=tabPos[k][0];y=tabPos[k][1];
+			tabAutor[k+0][0][0]=x+width+9999 ; tabAutor[k+0][0][1]=y+9999 ; 
+			tabAutor[k+0][1][0]=x-width+9999 ; tabAutor[k+0][1][1]=y+9999 ; 
+			tabAutor[k+0][2][0]=x ; tabAutor[k+0][2][1]=y+9999-height ; 
+			tabAutor[k+0][3][0]=x+width+9999 ; tabAutor[k+0][3][1]=y+9999+height;
+			tabAutor[k+0][4][0]=x ; tabAutor[k+0][4][1]=y+9999+height; 
+			tabAutor[k+0][6][0]=x-width+9999 ; tabAutor[k+0][6][1]=y+9999+height;
+			tabAutor[k+0][5][0]=x+width+9999 ; tabAutor[k+0][5][1]=y+9999-height ; 
+			tabAutor[k+0][7][0]=x-width+9999 ; tabAutor[k+0][7][1]=y+9999-height ;
+
+			//***********reineWhite************
+			x=tabPos[1+k][0];y=tabPos[k+1][1];
+			tabAutor[k+1][0][0]=x+9999+width ; tabAutor[k+1][0][1]=y+9999;	
+			 if(!verifBlackAndWhite(x+width, y))
+				 {tabAutor[k+1][1][0]=x+9999+width*2 ; tabAutor[k+1][1][1]=y+9999;}
+			if(!verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+				{tabAutor[k+1][2][0]=x+9999+width*3 ; tabAutor[k+1][2][1]=y+9999;}
+			if(!verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y))
+				{tabAutor[k+1][3][0]=x+9999+width*4 ; tabAutor[k+1][3][1]=y+9999;}
+			if(!verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+				{tabAutor[k+1][4][0]=x+9999+width*5 ; tabAutor[k+1][4][1]=y+9999;}
+			if(!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+				{tabAutor[k+1][5][0]=x+9999+width*6 ; tabAutor[k+1][5][1]=y+9999;}
+			if( !verifBlackAndWhite(x+width*6, y)&&!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+				{tabAutor[k+1][6][0]=x+9999+width*7 ; tabAutor[k+1][6][1]=y+9999;}
+				
+			tabAutor[k+1][13][0]=x+9999-width ; tabAutor[k+1][13][1]=y+9999;
+			if(!verifBlackAndWhite(x-width, y))
+				{tabAutor[k+1][7][0]=x+9999-width*2 ; tabAutor[k+1][7][1]=y+9999;}
+			if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y))
+				{tabAutor[k+1][8][0]=x+9999-width*3 ; tabAutor[k+1][8][1]=y+9999;}
+			if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y))
+				{tabAutor[k+1][9][0]=x+9999-width*4 ; tabAutor[k+1][9][1]=y+9999;}
+			if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y)) 
+				{tabAutor[k+1][10][0]=x+9999-width*5 ; tabAutor[k+1][10][1]=y+9999;}
+			if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y))
+				{tabAutor[k+1][11][0]=x+9999-width*6 ; tabAutor[k+1][11][1]=y+9999;}
+			if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y) && !verifBlackAndWhite(x-width*6, y)) 
+				{tabAutor[k+1][12][0]=x+9999-width*7 ; tabAutor[k+1][12][1]=y+9999;}
+				
+			tabAutor[k+1][14][1]=y+9999+height ; tabAutor[k+1][14][0]=x+9999; 	
+			if(!verifBlackAndWhite(x, y+height)) 
+				{tabAutor[k+1][27][1]=y+9999+height*2 ; tabAutor[k+1][27][0]=x+9999;} 
+			if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2)) 
+				{tabAutor[k+1][15][1]=y+9999+height*3 ; tabAutor[k+1][15][0]=x+9999;} 
+			if( !verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3))
+				{tabAutor[k+1][16][1]=y+9999+height*4 ; tabAutor[k+1][16][0]=x+9999;} 
+			if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4))
+				{tabAutor[k+1][17][1]=y+9999+height*5 ; tabAutor[k+1][17][0]=x+9999;} 
+			if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5))
+				{tabAutor[k+1][18][1]=y+9999+height*6 ; tabAutor[k+1][18][0]=x+9999;} 
+			if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5) && !verifWhite(x, y+height*6)) 
+				{tabAutor[k+1][19][1]=y+9999+height*7 ; tabAutor[k+1][19][0]=x+9999;} 
+				
+				
+			tabAutor[k+1][20][1]=y+9999-height ; tabAutor[k+1][20][0]=x+9999 ;	
+			if(!verifBlackAndWhite(x, y-height))
+				{tabAutor[k+1][21][1]=y+9999-height*2 ; tabAutor[k+1][21][0]=x+9999 ;}
+			if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2))
+				{tabAutor[k+1][22][1]=y+9999-height*3 ; tabAutor[k+1][22][0]=x+9999 ;}
+			if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3))
+				{tabAutor[k+1][23][1]=y+9999-height*4 ; tabAutor[k+1][23][0]=x+9999;}
+			if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)) 
+				{tabAutor[k+1][24][1]=y+9999-5*height ; tabAutor[k+1][24][0]=x+9999 ;}
+			if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4) && !verifBlackAndWhite(x, y-height*5))
+				{tabAutor[k+1][25][1]=y+9999-6*height ; tabAutor[k+1][25][0]=x+9999;}
+			if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)  && !verifBlackAndWhite(x, y-height*5)&& !verifBlackAndWhite(x, y-height*6))
+				{tabAutor[k+1][26][1]=y+9999-height*7 ; tabAutor[k+1][26][0]=x+9999;}
+				
+			tabAutor[k+1][28][0]=x+9999+width;tabAutor[k+1][28][1]=y+9999+height;	
+			if( !verifBlackAndWhite(x+width, y+height))
+				{tabAutor[k+1][29][0]=x+9999+width*2 ; tabAutor[k+1][29][1]=y+9999+height*2;}
+			if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2))
+				{tabAutor[k+1][30][0]=x+9999+width*3 ; tabAutor[k+1][30][1]=y+9999+height*3 ;}
+			if( !verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3))
+				{tabAutor[k+1][31][0]=x+9999+width*4 ; tabAutor[k+1][31][1]=y+9999+4*height ;}
+			if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4)) 
+				{tabAutor[k+1][32][0]=x+9999+width*5 ; tabAutor[k+1][32][1]=y+9999+height*5 ;}
+				
+			if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5))
+				{tabAutor[k+1][33][0]=x+9999+width*6 ; tabAutor[k+1][33][1]=y+9999+height*6 ;}
+			if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5) && !verifWhite(x+width*6, y+height*6)) 
+				{tabAutor[k+1][34][0]=x+9999+width*7 ; tabAutor[k+1][34][1]=y+9999+height*7;}
+			
+			tabAutor[k+1][35][0]=x+9999-width ; tabAutor[k+1][35][1]=y+9999+height;
+				
+			if(!verifBlackAndWhite(x-width, y+height))
+				{tabAutor[k+1][36][0]=x+9999-width*2 ; tabAutor[k+1][36][1]=y+9999+height*2;}
+			if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2)) 
+				{tabAutor[k+1][37][0]=x+9999-width*3 ; tabAutor[k+1][37][1]=y+9999+height*3;}
+			if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3))
+				{tabAutor[k+1][38][0]=x+9999-width*4 ; tabAutor[k+1][38][1]=y+9999+4*height;}
+			if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4))
+				{tabAutor[k+1][39][0]=x+9999-width*5 ; tabAutor[k+1][39][1]=y+9999+height*5;}
+			if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5))
+				{tabAutor[k+1][40][0]= x-width*6 ; tabAutor[k+1][40][1]=y+9999+height*6;}
+			if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5) && !verifBlackAndWhite(x-width*6, y+height*6)) 
+				{tabAutor[k+1][41][0]=x+9999-width*7  ; tabAutor[k+1][41][1]=y+9999+height*7 ;}
+			
+			tabAutor[k+1][42][0]=x+9999+width ; tabAutor[k+1][42][1]=y+9999-height; 
+				
+			if(!verifBlackAndWhite(x+width, y-height))
+				{tabAutor[k+1][43][0]=x+9999+width*2 ; tabAutor[k+1][43][1]=y+9999-height*2;}
+			if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2))
+				{tabAutor[k+1][44][0]=x+9999+width*3 ; tabAutor[k+1][44][1]=y+9999-height*3;}
+			if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3))
+				{tabAutor[k+1][45][0]=x+9999+width*4 ; tabAutor[k+1][45][1]=y+9999-4*height;}
+			if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4))
+				{tabAutor[k+1][46][0]=x+9999+width*5 ; tabAutor[k+1][46][1]=y+9999-height*5;}
+			if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5)) 
+				{tabAutor[k+1][47][0]=x+9999+width*6 ; tabAutor[k+1][47][1]=y+9999-height*6;} 
+			if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5) && !verifBlackAndWhite(x+width*6, y-height*6))
+				{tabAutor[k+1][48][0]=x+9999+width*7 ; tabAutor[k+1][48][1]= y-height*7;}
+				
+			tabAutor[k+1][49][0]=x+9999-width ; tabAutor[k+1][49][1]=y+9999-height;
+				
+			if(!verifBlackAndWhite(x-width, y-height))
+				{tabAutor[k+1][50][0]=x+9999-width*2 ; tabAutor[k+1][50][1]=y+9999-height*2;}
+			if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2)) 
+				{tabAutor[k+1][51][0]=x+9999-width*3; ; tabAutor[k+1][51][1]=y+9999-height*3;}
+			if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3))
+				{tabAutor[k+1][52][0]=x+9999-width*4; ; tabAutor[k+1][52][1]=y+9999-height*4;}
+			if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4))
+				{tabAutor[k+1][53][0]=x+9999-width*5; ; tabAutor[k+1][53][1]=y+9999-height*5;}
+			if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5)) 
+				{tabAutor[k+1][54][0]=x+9999-height*6 ; tabAutor[k+1][54][1]=y+9999-height*6;}
+			if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5) && !verifWhite(x-width*6, y-height*6))
+				{tabAutor[k+1][55][0]=x+9999-width*7 ; tabAutor[k+1][55][1]=y+9999-height*7;}
+			
+		
+			//********fouWhite******************
+			for(int i=2;i<4;i++) {
+				x=tabPos[i+k][0];y=tabPos[i+k][1];
+				tabAutor[0][0]=x+9999+width ; tabAutor[0][1]=y+9999+height;
+					
+				if( !verifBlackAndWhite(x+width, y+height))
+					{tabAutor[1][0]=x+9999+width*2 ; tabAutor[1][1]=y+9999+height*2  ;}
+					
+				if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2))
+					{tabAutor[2][0]=x+9999+width*3 ; tabAutor[2][1]=y+9999+height*3 ;}
+				if( !verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3))
+					{tabAutor[3][0]=x+9999+width*4 ; tabAutor[3][1]=y+9999+4*height ;}
+				if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4)) 
+					{tabAutor[4][0]=x+9999+width*5 ; tabAutor[4][1]=y+9999+height*5 ;}
+					
+				if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5))
+					{tabAutor[5][0]=x+9999+width*6 ; tabAutor[5][1]=y+9999+height*6 ;}
+				if(!verifBlackAndWhite(x+width, y+height) && !verifBlackAndWhite(x+width*2, y+height*2) && !verifBlackAndWhite(x+width*3, y+height*3)  && !verifBlackAndWhite(x+width*4, y+height*4) && !verifWhite(x+width*5, y+height*5) && !verifWhite(x+width*6, y+height*6)) 
+					{tabAutor[6][0]=x+9999+width*7 ; tabAutor[6][1]=y+9999+height*7;}
+				
+				tabAutor[7][0]=x+9999-width ; tabAutor[7][1]=y+9999+height;
+					
+				if(!verifBlackAndWhite(x-width, y+height))
+					{tabAutor[8][0]=x+9999-width*2 ; tabAutor[8][1]=y+9999+height*2;}
+					
+				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2)) 
+					{tabAutor[9][0]=x+9999-width*3 ; tabAutor[9][1]=y+9999+height*3;}
+					
+				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3))
+					{tabAutor[10][0]=x+9999-width*4 ; tabAutor[10][1]=y+9999+4*height;}
+				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4))
+					{tabAutor[11][0]=x+9999-width*5 ; tabAutor[11][1]=y+9999+height*5;}
+				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5))
+					{tabAutor[13][0]=x+9999-width*7  ; tabAutor[13][1]=y+9999+height*6;}
+				if(!verifBlackAndWhite(x-width, y+height) && !verifWhite(x-width*2, y+height*2) && !verifBlackAndWhite(x-width*3, y+height*3)  && !verifBlackAndWhite(x-width*4, y+height*4) && !verifBlackAndWhite(x-width*5, y+height*5) && !verifBlackAndWhite(x-width*6, y+height*6)) 
+					{tabAutor[13][0]=x+9999-width*7  ; tabAutor[13][1]=y+9999+height*7 ;}
+				
+				tabAutor[14][0]=x+9999+width ; tabAutor[14][1]=y+9999-height; 
+					
+				if(!verifBlackAndWhite(x+width, y-height))
+					{tabAutor[15][0]=x+9999+width*2 ; tabAutor[15][1]=y+9999-height*2;}
+				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2))
+					{tabAutor[16][0]=x+9999+width*3 ; tabAutor[16][1]=y+9999-height*3;}
+				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3))
+					{tabAutor[17][0]=x+9999+width*4 ; tabAutor[17][1]=y+9999-4*height;}
+				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4))
+					{tabAutor[18][0]=x+9999+width*5 ; tabAutor[18][1]=y+9999-height*5;}
+				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5)) 
+					{tabAutor[19][0]=x+9999+width*6 ; tabAutor[19][1]=y+9999-height*6; }
+				if(!verifBlackAndWhite(x+width, y-height) && !verifBlackAndWhite(x+width*2, y-height*2) && !verifBlackAndWhite(x+width*3, y-height*3) && !verifBlackAndWhite(x+width*4, y-height*4) && !verifBlackAndWhite(x+width*5, y-height*5) && !verifBlackAndWhite(x+width*6, y-height*6))
+					{tabAutor[20][0]=x+9999+width*7 ; tabAutor[20][1]=y+9999+9999-height*7;}
+					
+				tabAutor[21][0]=x+9999-width ; tabAutor[21][1]=y+9999-height;
+					
+				if(!verifBlackAndWhite(x-width, y-height))
+					{tabAutor[22][0]=x+9999-width*2 ; tabAutor[22][1]=y+9999-height*2;}
+				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2)) 
+					{tabAutor[23][0]=x+9999-width*3; ; tabAutor[23][1]=y+9999-height*3;}
+				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3))
+					{tabAutor[24][0]=x+9999-width*4; ; tabAutor[24][1]=y+9999-height*4;}
+				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4))
+					{tabAutor[25][0]=x+9999-width*5; ; tabAutor[25][1]=y+9999-height*5;}
+				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5)) 
+					{tabAutor[26][0]=x+9999-height*6 ; tabAutor[26][1]=y+9999-height*6;}
+				if(!verifBlackAndWhite(x-width, y-height) && !verifBlackAndWhite(x-width*2, y-height*2) && !verifBlackAndWhite(x-width*3, y-height*3) && !verifBlackAndWhite(x-width*4, y-height*4) && !verifBlackAndWhite(x-width*5, y-height*5) && !verifWhite(x-width*6, y-height*6))
+					{tabAutor[27][0]=x+9999-width*7 ; tabAutor[27][1]=y+9999-height*7;}
+			}
+		
+		
+			//****************tour**************
+			for(int i=4;i<6;i++) {	
+				x=tabPos[i+k][0];y=tabPos[i+k][1];
+				tabAutor[0][0]=x+9999+width ; tabAutor[0][1]=y+9999;	
+				 if(!verifBlackAndWhite(x+width, y))
+					 {tabAutor[1][0]=x+9999+width*2 ; tabAutor[1][1]=y+9999;}
+				if(!verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+					{tabAutor[2][0]=x+9999+width*3 ; tabAutor[2][1]=y+9999;}
+				if(!verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y))
+					{tabAutor[3][0]=x+9999+width*4 ; tabAutor[3][1]=y+9999;}
+				if(!verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+					{tabAutor[4][0]=x+9999+width*5 ; tabAutor[4][1]=y+9999;}
+				if(!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+					{tabAutor[5][0]=x+9999+width*6 ; tabAutor[5][1]=y+9999;}
+				if( !verifBlackAndWhite(x+width*6, y) &&!verifBlackAndWhite(x+width*5, y) && !verifBlackAndWhite(x+width*4, y)&& !verifBlackAndWhite(x+width*3, y) && !verifBlackAndWhite(x+width*2, y) && !verifBlackAndWhite(x+width,y)) 
+					{tabAutor[6][0]=x+9999+width*7 ; tabAutor[6][1]=y+9999;}
+					
+				tabAutor[13][0]=x+9999-width ; tabAutor[13][1]=y+9999;
+				if(!verifBlackAndWhite(x-width, y))
+					{tabAutor[7][0]=x+9999-width*2 ; tabAutor[7][1]=y+9999;}
+				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y))
+					{tabAutor[8][0]=x+9999-width*3 ; tabAutor[8][1]=y+9999;}
+				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y))
+					{tabAutor[9][0]=x+9999-width*4 ; tabAutor[9][1]=y+9999;}
+				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y)) 
+					{tabAutor[10][0]=x+9999-width*5 ; tabAutor[10][1]=y+9999;}
+				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y))
+					{tabAutor[11][0]=x+9999-width*6 ; tabAutor[11][1]=y+9999;}
+				if(!verifBlackAndWhite(x-width, y) && !verifBlackAndWhite(x-width*2, y) && !verifBlackAndWhite(x-width*3, y)&& !verifBlackAndWhite(x-width*4, y) && !verifBlackAndWhite(x-width*5, y) && !verifBlackAndWhite(x-width*6, y)) 
+					{tabAutor[12][0]=x+9999-width*7 ; tabAutor[12][1]=y+9999;}
+					
+				tabAutor[14][1]=y+9999+height ; tabAutor[14][0]=x+9999;
+				if(!verifBlackAndWhite(x, y+height)) 
+					{tabAutor[27][1]=y+9999+height*2 ; tabAutor[27][0]=x+9999;} 
+				if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2)) 
+					{tabAutor[15][1]=y+9999+height*3 ; tabAutor[15][0]=x+9999;} 
+				if( !verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3))
+					{tabAutor[16][1]=y+9999+height*4 ; tabAutor[16][0]=x+9999;} 
+				if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4))
+					{tabAutor[17][1]=y+9999+height*5 ; tabAutor[17][0]=x+9999;} 
+				if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5))
+					{tabAutor[18][1]=y+9999+height*6 ; tabAutor[18][0]=x+9999;} 
+				if(!verifBlackAndWhite(x, y+height)  && !verifBlackAndWhite(x, y+height*2) && !verifBlackAndWhite(x, y+height*3) && !verifBlackAndWhite(x, y+height*4) && !verifBlackAndWhite(x, y+height*5) && !verifBlackAndWhite(x, y+height*6)) 
+					{tabAutor[19][1]=y+9999+height*7 ; tabAutor[19][0]=x+9999;} 
+					
+					
+				tabAutor[20][1]=y+9999-height ; tabAutor[20][0]=x+9999 ;	
+				if(!verifBlackAndWhite(x, y-height))
+					{tabAutor[21][1]=y+9999-height*2 ; tabAutor[21][0]=x+9999 ;}
+				if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2))
+					{tabAutor[22][1]=y+9999-height*3 ; tabAutor[22][0]=x+9999 ;}
+				if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3))
+					{tabAutor[23][1]=y+9999-height*4 ; tabAutor[23][0]=x+9999;}
+				if(!verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)) 
+					{tabAutor[4][1]=y+9999-5*height ; tabAutor[4][0]=x+9999 ;}
+				if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4) && !verifBlackAndWhite(x, y-height*5))
+					{tabAutor[25][1]=y+9999-6*height ; tabAutor[25][0]=x+9999;}
+				if( !verifBlackAndWhite(x, y-height) && !verifBlackAndWhite(x, y-height*2) && !verifBlackAndWhite(x, y-height*3) && !verifBlackAndWhite(x, y-height*4)  && !verifBlackAndWhite(x, y-height*5)&& !verifBlackAndWhite(x, y-height*6))
+					{tabAutor[26][1]=y+9999-height*7 ; tabAutor[26][0]=x+9999;}
+			}	
+			//******************cavalier*********	
+			x=tabPos[6+k][0];y=tabPos[6+k][1];
+			tabAutor[k+6][0][0]=x+9999+2*width ; tabAutor[k+6][0][1]=y+9999+height;
+			tabAutor[k+6][1][0]=x+9999+2*width ; tabAutor[k+6][1][1]=y+9999-height;
+			tabAutor[k+6][2][0]=x+9999-2*width ; tabAutor[k+6][2][1]=y+9999+height;
+			tabAutor[k+6][3][0]=x+9999-2*width ; tabAutor[k+6][3][1]=y+9999-height;
+			tabAutor[k+6][4][0]=x+9999+width ;  tabAutor[k+6][4][1]=y+9999+2*height;
+			tabAutor[k+6][5][0]=x+9999+width ; tabAutor[k+6][5][1]=y+9999-2*height;
+			tabAutor[k+6][6][0]=x+9999-width ; tabAutor[k+6][6][1]=y+9999+2*height;
+			tabAutor[k+6][7][0]=x+9999-width ; tabAutor[k+6][7][1]=y+9999-2*height;
+			
+			//cavalierWhite2;
+			x=tabPos[7+k][0];y=tabPos[7+k][1];
+			tabAutor[k+7][0][0]=x+9999+2*width ; tabAutor[k+7][0][1]=y+9999+height;
+			tabAutor[k+7][1][0]=x+9999+2*width ; tabAutor[k+7][1][1]=y+9999-height;
+			tabAutor[k+7][2][0]=x+9999-2*width ; tabAutor[k+7][2][1]=y+9999+height;
+			tabAutor[k+7][3][0]=x+9999-2*width ; tabAutor[k+7][3][1]=y+9999-height;
+			tabAutor[k+7][4][0]=x+9999+width ;  tabAutor[k+7][4][1]=y+9999+2*height;
+			tabAutor[k+7][5][0]=x+9999+width ; tabAutor[k+7][5][1]=y+9999-2*height;
+			tabAutor[k+7][6][0]=x+9999-width ; tabAutor[k+7][6][1]=y+9999+2*height;
+			tabAutor[k+7][7][0]=x+9999-width ; tabAutor[k+7][7][1]=y+9999-2*height;
+		
+		k+=16;	
+}	
+			
+
+	for(int i=8;i<16;i++) {
+		x=tabPos[i][0];y=tabPos[i][1];
+		if(y==height*6+37 && !verifBlackAndWhite(x, y-height*2) &&!verifBlackAndWhite(x, y-height)) 
+			{tabAutor[i][0][1]=y+9999-height*2 ; tabAutor[i][0][0]=x+9999;}
+		if(!verifBlackAndWhite(x, y-height)) 
+			{tabAutor[i][1][1]=y+9999-height ; tabAutor[i][1][0]=x+9999;}
+		if(verifBlack(x+width,y-height))
+			{tabAutor[i][2][0]=x+9999+width ; tabAutor[i][2][1]=y+9999-height ;}
+		if(verifBlack(x-width,y-height)) 
+			{tabAutor[i][3][0]=x+9999-width ; tabAutor[i][3][1]=y+9999-height ;}
+	}
+	for(int i=24;i<32;i++) {
+		x=tabPos[i][0];y=tabPos[i][1];
+		if(y==height+37 && !verifBlackAndWhite(x, y+height*2) &&!verifBlackAndWhite(x, y+height)) 
+			{tabAutor[i][0][1]=y+9999+height*2 ; tabAutor[i][0][0]=x+9999 ;}
+		if( !verifBlackAndWhite(x, y+height)) 
+			{tabAutor[i][1][1]=y+9999+height ; tabAutor[i][1][0]=x+9999;}
+		if(verifWhite(x+width,y+height))
+			{tabAutor[i][2][0]=x+9999+width ; tabAutor[i][2][1]=y+9999+height ;}
+		if(verifWhite(x-width,y+height)) 
+			{tabAutor[i][3][0]=x+9999-width ; tabAutor[i][3][1]=y+9999+height ;}
+	}	
+	for(int i=0;i<16;i++) {
+		for(int j=0;j<56;j++) {
+			if(tabAutor[i][j][0]>=9999 && tabAutor[i][j][1]>=9999) {
+				tabAutor[i][j][0]-=9999;
+				tabAutor[i][j][1]-=9999;
+			}
+			else {
+				tabAutor[i][j][0]=2000;
+				tabAutor[i][j][1]=2000;
+			}
+			if(verifWhite(tabAutor[i][j][0], tabAutor[i][j][1])|| tabAutor[i][j][0]>width*7 || tabAutor[i][j][0]<0 || tabAutor[i][j][1]>height*7+37 || tabAutor[i][j][1]<37) {
+				tabAutor[i][j][0]=2000;
+				tabAutor[i][j][1]=2000;
+			}
+		}
+	}
+	for(int i=16;i<32;i++) {
+		for(int j=0;j<56;j++) {
+			if(tabAutor[i][j][0]>=9999 && tabAutor[i][j][1]>=9999) {
+				tabAutor[i][j][0]-=9999;
+				tabAutor[i][j][1]-=9999;
+			}
+			else {
+				tabAutor[i][j][0]=2000;
+				tabAutor[i][j][1]=2000;
+			}
+			if(verifBlack(tabAutor[i][j][0], tabAutor[i][j][1])|| tabAutor[i][j][0]>width*7 || tabAutor[i][j][0]<0 || tabAutor[i][j][1]>height*7+37 || tabAutor[i][j][1]<37) {
+				tabAutor[i][j][0]=2000;
+				tabAutor[i][j][1]=2000;
+			}
+		}
+	}
+	return tabAutor;
+}*/
 }
 	
